@@ -15,7 +15,7 @@
 
 ### Proof Generation
 
-prover wants to prove the secret x to verifer then
+prover wants to prove the secret x to verifier n
 
 1. step 1: Compute Y1, Y2
    - Y1 =g^x mod q

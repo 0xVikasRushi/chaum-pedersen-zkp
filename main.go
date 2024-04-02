@@ -5,8 +5,25 @@ import (
 	"math/big"
 )
 
+type Group struct {
+	g *big.Int
+	q *big.Int
+}
+
+// !  secret x and s random number
+type Commitment struct {
+	x *big.Int
+	s *big.Int
+}
+
+type Proof struct {
+	Y1 *big.Int
+	Y2 *big.Int
+	Z  *big.Int
+}
+
 func main() {
-	var q = big.NewInt(10009)
+	var q = big.NewInt(10009) // ? prime number
 	// ? make cyclic group array
 	// ? check for element which gcd with 1
 	var g = big.NewInt(4)
@@ -24,39 +41,37 @@ func main() {
 
 	// ? secret
 	x := big.NewInt(34)
-
-	// ? choose random number s = 300
-
 	s := big.NewInt(300)
 
-	// ? SEND Z
-	p1 := proof(g, x, q, a, B, s)
-	result := verify(g, &p1.Z, q, A, B, C, &p1.Y1, &p1.Y2, s)
+	group := Group{g, q}
+	commitment := Commitment{x, s}
+	proof := ProofGen(group, commitment, a, B)
+	result := VerifyProof(group, proof, A, B, C, s)
 	fmt.Println(result)
 }
 
-type Proof struct {
-	Y1 big.Int
-	Y2 big.Int
-	Z  big.Int
-}
-
-func proof(g *big.Int, x *big.Int, q *big.Int, a *big.Int, B *big.Int, s *big.Int) Proof {
+func ProofGen(group Group, commitment Commitment, a *big.Int, B *big.Int) Proof {
 	Y1 := new(big.Int)
 	Y2 := new(big.Int)
 
-	Y1.Exp(g, x, q)
-	Y2.Exp(B, x, q)
+	Y1.Exp(group.g, commitment.x, group.q)
+	Y2.Exp(B, commitment.x, group.q)
 
 	Z := new(big.Int)
-	Z = Z.Mul(a, s).Add(Z, x).Mod(Z, q)
-	return Proof{*Y1, *Y2, *Z}
+	Z = Z.Mul(a, commitment.s).Add(Z, commitment.x).Mod(Z, group.q)
+	return Proof{Y1, Y2, Z}
 }
 
-func verify(g *big.Int, Z *big.Int, q *big.Int, A *big.Int, B *big.Int, C *big.Int, Y1 *big.Int, Y2 *big.Int, s *big.Int) bool {
+func VerifyProof(group Group, proof Proof, A *big.Int, B *big.Int, C *big.Int, s *big.Int) bool {
 
 	LHS1 := new(big.Int)
 	RHS1 := new(big.Int)
+
+	Y1 := proof.Y1
+	Y2 := proof.Y2
+	Z := proof.Z
+	g := group.g
+	q := group.q
 
 	LHS1 = LHS1.Exp(g, Z, q)
 	RHS1 = RHS1.Exp(A, s, nil).Mul(RHS1, Y1)
