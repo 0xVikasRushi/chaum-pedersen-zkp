@@ -1,4 +1,4 @@
-# Chaum Pedersen Zkp protocol
+# Chaum Pedersen Non-Interactive Zero-Knowledge Proof 
 
 ## Description
 
