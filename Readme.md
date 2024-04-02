@@ -2,7 +2,7 @@
 
 ## Description
 
-This markdown file outlines the Chaum Pedersen Zero-Knowledge Proof (ZKP) protocol, a cryptographic technique used to prove knowledge of a secret without revealing the secret itself. The protocol involves a setup phase, proof generation, and verification steps.
+Chaum Pedersen Zero-Knowledge Proof (ZKP) protocol, a cryptographic technique used to prove knowledge of a secret without revealing the secret itself. The protocol involves a setup phase, proof generation, and verification steps.
 
 ## Setup
 
