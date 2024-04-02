@@ -22,27 +22,35 @@ func main() {
 	B.Exp(g, b, q)
 	C.Exp(g, temp.Mul(a, b), q)
 
-	// fmt.Println(A, B, C)
-
-	// ? proof generation part
-	Y1 := new(big.Int)
-	Y2 := new(big.Int)
-
 	// ? secret
 	x := big.NewInt(34)
-
-	Y1.Exp(g, x, q)
-	Y2.Exp(B, x, q)
 
 	// ? choose random number s = 300
 
 	s := big.NewInt(300)
-	Z := new(big.Int)
-	Z = Z.Mul(a, s).Add(Z, x).Mod(Z, q)
 
 	// ? SEND Z
-	result := verify(g, Z, q, A, B, C, Y1, Y2, s)
-	fmt.Print(result)
+	p1 := proof(g, x, q, a, B, s)
+	result := verify(g, &p1.Z, q, A, B, C, &p1.Y1, &p1.Y2, s)
+	fmt.Println(result)
+}
+
+type Proof struct {
+	Y1 big.Int
+	Y2 big.Int
+	Z  big.Int
+}
+
+func proof(g *big.Int, x *big.Int, q *big.Int, a *big.Int, B *big.Int, s *big.Int) Proof {
+	Y1 := new(big.Int)
+	Y2 := new(big.Int)
+
+	Y1.Exp(g, x, q)
+	Y2.Exp(B, x, q)
+
+	Z := new(big.Int)
+	Z = Z.Mul(a, s).Add(Z, x).Mod(Z, q)
+	return Proof{*Y1, *Y2, *Z}
 }
 
 func verify(g *big.Int, Z *big.Int, q *big.Int, A *big.Int, B *big.Int, C *big.Int, Y1 *big.Int, Y2 *big.Int, s *big.Int) bool {
