@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/big"
+	"math/rand"
 )
 
 type Group struct {
@@ -10,7 +11,6 @@ type Group struct {
 	q *big.Int
 }
 
-// !  secret x and s random number
 type Commitment struct {
 	x *big.Int
 	s *big.Int
@@ -23,12 +23,16 @@ type Proof struct {
 }
 
 func main() {
-	var q = big.NewInt(10009) // ? prime number
+	var q = big.NewInt(7582831921683869813)
+
+	// Print group parameters
+	fmt.Println("Prime modulus (q):", q)
+
 	// ? make cyclic group array
 	// ? check for element which gcd with 1
 	var g = big.NewInt(4)
-	var a = big.NewInt(10)
-	var b = big.NewInt(12)
+	var a = big.NewInt(6570281287)
+	var b = big.NewInt(55243360726030)
 
 	A := new(big.Int)
 	B := new(big.Int)
@@ -39,15 +43,26 @@ func main() {
 	B.Exp(g, b, q)
 	C.Exp(g, temp.Mul(a, b), q)
 
+	// Print group elements
+	fmt.Println("Generator (g):", g)
+	fmt.Println("Element a:", a)
+	fmt.Println("Element b:", b)
+	fmt.Println("Calculated g^ab:", C)
+
 	// ? secret
-	x := big.NewInt(34)
-	s := big.NewInt(300)
+	x := big.NewInt(212190921)
+	fmt.Println("Secret value (x):", x)
+
+	// ? random computation
+	randVal := rand.Intn(1000)
+	s := big.NewInt(int64(randVal))
+	fmt.Println("Random blinding factor (s):", s)
 
 	group := Group{g, q}
 	commitment := Commitment{x, s}
 	proof := ProofGen(group, commitment, a, B)
 	result := VerifyProof(group, proof, A, B, C, s)
-	fmt.Println(result)
+	fmt.Println("Verification result:", result)
 }
 
 func ProofGen(group Group, commitment Commitment, a *big.Int, B *big.Int) Proof {
